@@ -1,0 +1,108 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Rock Paper Scissors</title>
+<link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGNgYAAAAAMAASsJTYQAAAAASUVORK5CYII=">
+<style>:root{--gold:#ffde59;--accent:#ff9e4a;--dark:rgba(0,0,0,.35);--btn-bg:linear-gradient(120deg,#ffd36b,#ff9e4a)}
+*{box-sizing:border-box;margin:0;padding:0}html,body{height:100%;font-family:Arial,Helvetica,sans-serif;background:#111;color:#dbf208}
+.app{min-height:100%;background:url('rps-background.jpg') center/cover no-repeat fixed;image-rendering:pixelated;display:flex;flex-direction:column}
+.header{display:flex;justify-content:space-between;align-items:center;padding:1rem;background:rgba(0,0,0,.35)}
+.pixel{font-size:24px;letter-spacing:2px;color:#e0ad03;text-shadow:2px 2px 0 #130449,4px 4px 0 rgba(0,0,0,.3)}
+.back-button{color:#fff;text-decoration:none;border:2px solid rgba(255,255,255,.2);padding:6px 10px;border-radius:4px}
+main{flex:1;display:flex;justify-content:center;align-items:center;padding:2rem}
+.menu-card{display:flex;flex-direction:column;gap:18px;align-items:center;background:transparent}
+.btn{background:var(--btn-bg);color:#111;border:none;padding:18px 28px;font-size:18px;border-radius:10px;cursor:pointer;box-shadow:0 6px 0 rgba(0,0,0,.45);min-width:180px}
+.btn.s{padding:12px 16px;font-size:14px}.btn.red{background:linear-gradient(#ff7a7a,#ff5a5a);color:#fff}.hidden{display:none!important}
+.game{min-width:640px;padding:30px 20px;background:transparent}
+.row{display:flex;justify-content:space-between;gap:12px;margin-bottom:12px;font-size:12px}
+.hsmall{margin-bottom:12px;font-size:14px}.choices{display:flex;gap:8px}.choice{background:#fff;border:none;padding:18px 22px;font-size:30px;border-radius:10px;min-width:72px;cursor:pointer}
+.choice.sel{outline:5px solid #2ecc71}.sel-display{font-size:42px;min-height:64px;z-index:30}
+.vs{font-size:20px;color:#ddd;margin:0 12px}.result{margin-top:14px;font-size:16px;min-height:28px}.controls{display:flex;gap:12px;justify-content:center;margin-top:16px}
+.modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.6)}
+.modal .card{background:var(--dark);padding:26px;min-width:360px;text-align:center}
+.big-result{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:9999}
+.big-result .card{background:rgba(0,0,0,.7);padding:36px 48px;border-radius:12px;text-align:center;color:#fff;transform:scale(.9);transition:.25s}
+.big-result.show .card{transform:scale(1)}.big-result .title{font-size:48px;color:var(--gold);text-shadow:6px 6px 0 rgba(0,0,0,.5)}.big-result .subtitle{font-size:20px;margin-top:12px;color:#fff}
+.zoomed .app{transform:scale(1.35);transform-origin:top left}.zoomed .pixel{font-size:34px}.zoomed .btn{padding:18px 24px;font-size:18px}.zoomed .sel-display{font-size:34px}.zoomed .result{font-size:18px}
+@media(max-width:600px){.game{min-width:92vw}.menu-card{min-width:90vw}.pixel{font-size:18px}}
+</style></head><body><div class="app" id="app">
+<header class="header"><div class="pixel">ROCK PAPER SCISSORS</div><a class="back-button" href="../index.html">Back</a></header>
+<main><section class="menu" id="menu"><div class="menu-card">
+<button id="btn-play" class="btn">Play</button>
+<button id="btn-help" class="btn">Help</button>
+<button id="btn-quit" class="btn">Quit</button>
+</div></section><section id="mode" class="hidden"><div class="menu-card">
+<button id="vs-computer" class="btn">Play vs Computer</button>
+<button id="vs-friend" class="btn">Play vs Friend</button>
+<button id="mode-back" class="btn s">Back</button>
+</div></section><section id="game" class="game hidden">
+<div class="row"><div>Player 1: <span id="score-p1">0</span></div><div>Ties: <span id="score-ties">0</span></div><div>Player 2: <span id="score-p2">0</span></div></div>
+<div class="hsmall">Make your choices</div>
+<div style="display:flex;align-items:center;justify-content:space-between">
+<div style="display:flex;flex-direction:column;align-items:center;gap:10px">
+<div style="font-size:11px;color:#ffdd57">Player 1</div>
+<div class="choices"><button class="choice" data-player="1" data-choice="rock">✊</button>
+<button class="choice" data-player="1" data-choice="paper">✋</button>
+<button class="choice" data-player="1" data-choice="scissors">✌️</button>
+</div><div id="p1-selection" class="sel-display">?</div></div>
+<div class="vs">VS</div><div style="display:flex;flex-direction:column;align-items:center;gap:10px">
+<div style="font-size:11px;color:#ffdd57">Player 2</div>
+<div class="choices"><button class="choice" data-player="2" data-choice="rock">✊</button>
+<button class="choice" data-player="2" data-choice="paper">✋</button>
+<button class="choice" data-player="2" data-choice="scissors">✌️</button>
+</div><div id="p2-selection" class="sel-display">?</div></div>
+</div><div id="result" class="result">Ready</div>
+<div class="controls"><button id="play-round" class="btn s">Play Round</button>
+<button id="reset-btn" class="btn s red">Reset</button>
+<button id="back-to-menu" class="btn s">Menu</button></div>
+</section></main><div id="help" class="modal hidden"><div class="card"><h3>How to play</h3><p>Choose rock, paper or scissors.<br>Rock beats scissors, scissors beat paper, paper beats rock.</p><button id="help-close" class="btn s">Close</button></div></div>
+<div id="quit" class="modal hidden"><div class="card"><h3>Quit Game</h3><p>The page will try to close; if blocked the view is enlarged for readability.</p><div style="display:flex;gap:8px;margin-top:12px;justify-content:center"><button id="try-close" class="btn s red">Try close tab</button><button id="unzoom" class="btn s">Restore size</button></div></div></div>
+<div id="big-result" class="big-result hidden" aria-live="polite"></div>
+</div><script>(()=>{const $=(s)=>document.querySelector(s),$$=(s)=>Array.from(document.querySelectorAll(s));
+const menu=$('#menu'),mode=$('#mode'),game=$('#game'),help=$('#help'),quit=$('#quit'),big=$('#big-result');
+const btnPlay=$('#btn-play'),btnHelp=$('#btn-help'),btnQuit=$('#btn-quit'),modeBack=$('#mode-back'),vsC=$('#vs-computer'),vsF=$('#vs-friend');
+const playRound=$('#play-round'),resetBtn=$('#reset-btn'),backToMenu=$('#back-to-menu'),helpClose=$('#help-close'),tryClose=$('#try-close'),unzoom=$('#unzoom');
+const p1Sel=$('#p1-selection'),p2Sel=$('#p2-selection'),scoreP1=$('#score-p1'),scoreP2=$('#score-p2'),scoreT=$('#score-ties'),result=$('#result');
+const emoji={rock:'✊',paper:'✋',scissors:'✌️'};let modeType=null,p1=null,p2=null,scores={p1:0,p2:0,ties:0};
+let audioCtx,osc,gainNode,intervalId;
+function startChiptune(){if(!audioCtx)audioCtx=new (window.AudioContext||window.webkitAudioContext)();if(osc)return;osc=audioCtx.createOscillator();gainNode=audioCtx.createGain();osc.type='square';osc.connect(gainNode);gainNode.connect(audioCtx.destination);gainNode.gain.value=0;osc.start();const seq=[880,0,660,0,440,660,0,0];let i=0;intervalId=setInterval(()=>{const f=seq[i%seq.length];if(f>0){try{osc.frequency.setValueAtTime(f,audioCtx.currentTime);}catch{}gainNode.gain.cancelScheduledValues(audioCtx.currentTime);gainNode.gain.setTargetAtTime(0.072,audioCtx.currentTime,0.01);}else{gainNode.gain.cancelScheduledValues(audioCtx.currentTime);gainNode.gain.setTargetAtTime(0,audioCtx.currentTime,0.02);}i++;},180)}
+function stopChiptune(){if(intervalId){clearInterval(intervalId);intervalId=null}if(osc){try{osc.stop()}catch{}osc.disconnect();osc=null}if(gainNode){gainNode.disconnect();gainNode=null}}
+function playVictory(){try{if(!audioCtx)audioCtx=new (window.AudioContext||window.webkitAudioContext)();const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type='sawtooth';o.connect(g);g.connect(audioCtx.destination);g.gain.value=0.0001;o.frequency.setValueAtTime(660,audioCtx.currentTime);o.start();g.gain.linearRampToValueAtTime(0.15,audioCtx.currentTime+0.02);o.frequency.exponentialRampToValueAtTime(880,audioCtx.currentTime+0.35);setTimeout(()=>{g.gain.linearRampToValueAtTime(0.0001,audioCtx.currentTime+0.1);try{o.stop()}catch{}},600)}catch{}}
+function resetRound(){p1=null;p2=null;p1Sel.textContent='?';p2Sel.textContent='?';result.textContent='Make your choices';$$('.choice').forEach(b=>{b.classList.remove('sel');b.disabled=false;b.style.filter=''});playRound.disabled=true;resetBtn.classList.remove('hidden');backToMenu.classList.remove('hidden')}
+function determine(a,b){if(!a||!b)return null;if(a===b)return'tie';if((a==='rock'&&b==='scissors')||(a==='paper'&&b==='rock')||(a==='scissors'&&b==='paper'))return'p1';return'p2'}
+btnPlay.addEventListener('click',()=>{startChiptune();menu.classList.add('hidden');mode.classList.remove('hidden')})
+modeBack.addEventListener('click',()=>{mode.classList.add('hidden');menu.classList.remove('hidden')})
+btnHelp.addEventListener('click',()=>{startChiptune();menu.classList.add('hidden');help.classList.remove('hidden')})
+helpClose.addEventListener('click',()=>{help.classList.add('hidden');menu.classList.remove('hidden')})
+btnQuit.addEventListener('click',()=>{startChiptune();menu.classList.add('hidden');quit.classList.remove('hidden');document.documentElement.classList.add('zoomed');stopChiptune();try{window.close()}catch{}});
+tryClose.addEventListener('click',()=>{try{window.close()}catch{}});
+unzoom.addEventListener('click',()=>{document.documentElement.classList.remove('zoomed');quit.classList.add('hidden');menu.classList.remove('hidden')});
+vsC.addEventListener('click',()=>{startChiptune();modeType='computer';mode.classList.add('hidden');game.classList.remove('hidden');resetRound()});
+vsF.addEventListener('click',()=>{startChiptune();modeType='friend';mode.classList.add('hidden');game.classList.remove('hidden');resetRound()});
+backToMenu.addEventListener('click',()=>{game.classList.add('hidden');mode.classList.add('hidden');menu.classList.remove('hidden')});
+resetBtn.addEventListener('click',()=>{scores={p1:0,p2:0,ties:0};scoreP1.textContent='0';scoreP2.textContent='0';scoreT.textContent='0';resetRound()});
+$$('.choice').forEach(btn=>btn.addEventListener('click',e=>{const b=e.currentTarget,p=b.dataset.player,c=b.dataset.choice;$$(`.choice[data-player="${p}"]`).forEach(x=>x.classList.remove('sel'));if(modeType!=='friend')b.classList.add('sel');if(p==='1'){p1=c;p1Sel.textContent=emoji[c]}else{p2=c;p2Sel.textContent=emoji[c]}if(modeType==='computer'&&p==='1'){const opts=['rock','paper','scissors'];p2=opts[Math.floor(Math.random()*3)];p2Sel.textContent=emoji[p2];playRound.disabled=false}if(modeType==='friend'){$$(`.choice[data-player="${p}"]`).forEach(x=>x.disabled=true);if(p==='1')p1Sel.textContent='?';else p2Sel.textContent='?';if(p1&&p2){playRound.disabled=false;resetBtn.classList.add('hidden');backToMenu.classList.add('hidden')}}}));
+playRound.addEventListener('click', ()=> {
+	startChiptune();
+	if (!p1 || !p2) {
+        result.textContent = "Both players must choose!";
+		return;}
+	if (modeType === 'friend') {
+		p1Sel.textContent = emoji[p1];
+		p2Sel.textContent = emoji[p2];}
+	const w = determine(p1, p2);
+	if (w === 'tie') {
+		scores.ties++;
+		result.textContent = "It's a tie!";
+		scoreT.textContent = scores.ties;
+	} else if (w === 'p1') {
+		scores.p1++;
+		result.textContent = 'Player 1 wins!';
+		scoreP1.textContent = scores.p1;
+		showBig('PLAYER 1 WINS!');
+	} else {
+		scores.p2++;
+		result.textContent = 'Player 2 wins!';
+		scoreP2.textContent = scores.p2;
+		showBig('PLAYER 2 WINS!');}
+	setTimeout(()=>{resetRound();playRound.disabled=true},1600);});
+function showBig(txt){big.innerHTML=`<div class="card"><div class="title">${txt}</div><div class="subtitle"> U won — Ab Nacho!🕺💃</div></div>`;big.classList.remove('hidden');big.classList.add('show');playVictory();setTimeout(()=>{big.classList.remove('show');big.classList.add('hidden')},1600)}
+['click','keydown','touchstart'].forEach(e=>window.addEventListener(e,()=>{try{startChiptune()}catch{}},{once:true}));
+resetRound();})();</script></body></html>
